@@ -1,4 +1,3 @@
-# urdh prompt theme, by Simon Sigurdhsson <http://github.com/urdh/>
 function fish_title --description 'Set terminal title'
     if set -q fish_title_disabled
         return

@@ -1,4 +1,8 @@
 # urdh prompt theme, by Simon Sigurdhsson <http://github.com/urdh/>
+
+# while this is pretty nice it could use the right prompt more.
+# also, missing screenshot.
+
 function _urdh_theme_user --description 'Print user name'
     switch $USER
         case root

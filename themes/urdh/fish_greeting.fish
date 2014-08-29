@@ -1,4 +1,3 @@
-# urdh prompt theme, by Simon Sigurdhsson <http://github.com/urdh/>
 function fish_greeting --description 'Print the shell greeting'
     set -l c_n (set_color normal)
     set -l c_w (set_color cyan)
