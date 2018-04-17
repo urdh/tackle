@@ -2,7 +2,11 @@
 function up -d "Update software to the latest versions"
     if contains "all" $argv
         git -C $HOME/.tacklebox pull > /dev/null
-        git -C $HOME/.tackle pull > /dev/null
+        for dir in $HOME/.tackle/*
+            if test -d $dir/tackle
+                git -C $dir/tackle pull > /dev/null
+            end
+        end
         which brew >/dev/null 2>&1
         and begin
             brew update
