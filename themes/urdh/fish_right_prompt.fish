@@ -49,7 +49,7 @@ function fish_right_prompt --description 'Write out the right-hand prompt'
     if test -n "$___vcs"
         switch $___vcs
             case 'git'
-                fish_git_prompt '%s'
+                __fish_git_prompt '%s'
             case '*'
                 set -l ___normal_color (set_color normal)
                 set -l ___status (vcprompt -f '%u%m')
