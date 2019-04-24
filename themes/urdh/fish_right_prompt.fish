@@ -1,51 +1,67 @@
 # urdh prompt theme, by Simon Sigurdhsson <http://github.com/urdh/>
 function fish_right_prompt --description 'Write out the right-hand prompt'
+    # Shared settings
+    _ifnotset _urdh_theme_vcs_color_clean 'green' '--bold'
+    _ifnotset _urdh_theme_vcs_color_staged 'green' '--bold'
+    _ifnotset _urdh_theme_vcs_color_invalid 'red' '--bold'
+    _ifnotset _urdh_theme_vcs_color_dirty 'yellow' '--bold'
+    _ifnotset _urdh_theme_vcs_color_untracked 'red' '--bold'
+    _ifnotset _urdh_theme_vcs_color_stash 'cyan' '--bold'
+    _ifnotset _urdh_theme_vcs_color_upstream 'black' '--bold'
+
+    # Git prompt settings
+    set -g __fish_git_prompt_color_cleanstate $_urdh_theme_vcs_color_clean
+    set -g __fish_git_prompt_color_stagedstate $_urdh_theme_vcs_color_staged
+    set -g __fish_git_prompt_color_invalidstate $_urdh_theme_vcs_color_invalid
+    set -g __fish_git_prompt_color_dirtystate $_urdh_theme_vcs_color_dirty
+    set -g __fish_git_prompt_color_untrackedfiles $_urdh_theme_vcs_color_untracked
+    set -g __fish_git_prompt_color_stashstate $_urdh_theme_vcs_color_stash
+    set -g __fish_git_prompt_color_upstream $_urdh_theme_vcs_color_upstream
+
+    _ifnotset __fish_git_prompt_char_upstream_equal ''
+    _ifnotset __fish_git_prompt_char_upstream_ahead '⬘'
+    _ifnotset __fish_git_prompt_char_upstream_behind '⬙'
+    _ifnotset __fish_git_prompt_char_upstream_diverged '⬥'
+    _ifnotset __fish_git_prompt_char_stateseparator ''
+    _ifnotset __fish_git_prompt_char_dirtystate '●'
+    _ifnotset __fish_git_prompt_char_invalidstate '⦻'
+    _ifnotset __fish_git_prompt_char_stagedstate '●'
+    _ifnotset __fish_git_prompt_char_untrackedfiles '○'
+    _ifnotset __fish_git_prompt_char_cleanstate '✔ '
+    _ifnotset __fish_git_prompt_char_stashstate '▣'
+
+    _ifnotset __fish_git_prompt_hide_dirtystate 'true'
+    _ifnotset __fish_git_prompt_hide_invalidstate 'true'
+    _ifnotset __fish_git_prompt_hide_stagedstate 'true'
+    _ifnotset __fish_git_prompt_hide_untrackedfiles 'true'
+
+    set -g __fish_git_prompt_showstashstate 'true'
+    set -g __fish_git_prompt_showdirtystate 'true'
+    set -g __fish_git_prompt_showuntrackedfiles 'true'
+    set -g __fish_git_prompt_show_informative_status 'true'
+    set -g __fish_git_prompt_showupstream 'git'
+
+    set -g __fish_git_prompt_shorten_branch_len '0'
+    set -g __fish_git_prompt_shorten_branch_char_suffix ''
+
+    # Show the prompt!
     set -l ___vcs (vcprompt -f '%n')
     if test -n "$___vcs"
         switch $___vcs
-            case 'git*'
-                set -l __fish_git_prompt_showstashstate 'yes'
-                set -l __fish_git_prompt_showdirtystate 'yes'
-                set -l __fish_git_prompt_showuntrackedfiles 'yes'
-                set -l __fish_git_prompt_show_informative_status 'yes'
-                set -l __fish_git_prompt_showupstream 'informative git'
-
-                set -g ___fish_git_prompt_color_cleanstate (set_color --bold green)
-                set -g ___fish_git_prompt_color_stagedstate (set_color --bold green)
-                set -g ___fish_git_prompt_color_invalidstate (set_color --bold red)
-                set -g ___fish_git_prompt_color_dirtystate (set_color --bold yellow)
-                set -g ___fish_git_prompt_color_untrackedfiles (set_color --bold red)
-                set -g ___fish_git_prompt_color_stashstate (set_color --bold cyan)
-
-                set -g ___fish_git_prompt_char_upstream_equal ''
-                set -g ___fish_git_prompt_char_upstream_ahead '⬘'
-                set -g ___fish_git_prompt_char_upstream_behind '⬙'
-                set -g ___fish_git_prompt_char_upstream_diverged '⬥'
-                set -g ___fish_git_prompt_char_stateseparator ''
-                set -g ___fish_git_prompt_char_dirtystate '●'
-                set -g ___fish_git_prompt_char_invalidstate '⦻'
-                set -g ___fish_git_prompt_char_stagedstate '●'
-                set -g ___fish_git_prompt_char_untrackedfiles '○'
-                set -g ___fish_git_prompt_char_cleanstate '✔ '
-                set -g ___fish_git_prompt_char_stashstate '▣'
-
-                set -g __fish_git_prompt_hide_dirtystate 'yes'
-                set -g __fish_git_prompt_hide_invalidstate 'yes'
-                set -g __fish_git_prompt_hide_stagedstate 'yes'
-                set -g __fish_git_prompt_hide_untrackedfiles 'yes'
-
-                set -l i (__fish_git_prompt_informative_status)
-                set -l s
-                if test -r (command git rev-parse --git-dir)/refs/stash
-				            set s $___fish_git_prompt_char_stashstate
-                    set s "$___fish_git_prompt_color_stashstate$s"
-                    set s "$s$___fish_git_prompt_color_stashstate_done"
-			          end
-                set -l u (__fish_git_prompt_show_upstream)
-
-                printf '%s%s%s%s%s' $i (set_color -o black) $s $u (set_color normal)
-            case 'hg*'
-                printf ' %s%s%s' (set_color -o red) (hg prompt '{status}') (set_color normal)
+            case 'git'
+                fish_git_prompt '%s'
+            case '*'
+                set -l ___normal_color (set_color normal)
+                set -l ___status (vcprompt -f '%u%m')
+                if string match -qr '\+' "$___status"
+                    set -l ___dirty_color (set_color $_urdh_theme_vcs_color_dirty)
+                    printf '%s●%s' $___dirty_color $___normal_color
+                else
+                    if string match -qr '\?' "$___status"
+                        set -l ___untracked_color  (set_color $_urdh_theme_vcs_color_untracked)
+                        printf '%s○%s' $___untracked_color $___normal_color
+                    end
+                end
         end
     end
 end
