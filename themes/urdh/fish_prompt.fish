@@ -47,9 +47,7 @@ end
 
 function fish_prompt --description 'Write out the prompt'
     # precalc some variables
-    if not set -q _urdh_theme_hostname
-        set -g _urdh_theme_hostname (hostname|cut -d . -f 1)
-    end
+    _ifnotset _urdh_theme_hostname (hostname|cut -d . -f 1)
     # print the prompt
     set -l ___host (printf '%s@%s' (_urdh_theme_user) $_urdh_theme_hostname)
     set -l ___cwd (_urdh_theme_cwd)
