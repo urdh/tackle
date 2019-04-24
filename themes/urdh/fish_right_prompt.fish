@@ -50,11 +50,18 @@ function fish_right_prompt --description 'Write out the right-hand prompt'
         switch $___vcs
             case 'git'
                 fish_git_prompt '%s'
-            case 'hg'
-                set -l ___status_color (set_color $_urdh_theme_vcs_color_untracked)
+            case '*'
                 set -l ___normal_color (set_color normal)
-                set -l ___status (hg prompt '{status}')
-                printf '%s%s%s' $___status_color $___status $___normal_color
+                set -l ___status (vcprompt -f '%u%m')
+                if string match -qr '\+' "$___status"
+                    set -l ___dirty_color (set_color $_urdh_theme_vcs_color_dirty)
+                    printf '%s●%s' $___dirty_color $___normal_color
+                else
+                    if string match -qr '\?' "$___status"
+                        set -l ___untracked_color  (set_color $_urdh_theme_vcs_color_untracked)
+                        printf '%s○%s' $___untracked_color $___normal_color
+                    end
+                end
         end
     end
 end

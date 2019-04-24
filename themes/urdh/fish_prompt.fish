@@ -36,7 +36,7 @@ function _urdh_theme_vcs --description 'Write out the VCS prompt'
         switch $___vcs
             case 'git'
                 fish_git_prompt '%s'
-            case 'hg'
+            case '*'
                 set -l ___branch_color (set_color $_urdh_theme_vcs_color_branch)
                 set -l ___normal_color (set_color normal)
                 set -l ___branch (vcprompt -f '%b')
